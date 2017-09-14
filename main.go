@@ -10,7 +10,7 @@ import (
 
 var compareBranch string
 var ignorecsv string
-var ignore []string = []string{"master", "staging", "qa", "release", "uat", "production", "HEAD"}
+var ignore []string = []string{"master", "develop", "staging", "qa", "release", "uat", "production", "stage", "prod", "HEAD"}
 
 func init() {
     ignoredDefault := ""
