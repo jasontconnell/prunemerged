@@ -17,7 +17,8 @@ func main(){
     flag.Parse()
 
     if branch == "" {
-        fmt.Println("Usage ::  prunemerged -b [branch-name]")
+        //fmt.Println("Usage ::  prunemerged -b [branch-name]")
+        branch = "develop"
     }
     cmd := exec.Command("git", "branch", "--merged", branch)
 
