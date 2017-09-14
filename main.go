@@ -9,10 +9,16 @@ import (
 )
 
 var compareBranch string
+var ignorecsv string
 var ignore []string = []string{"master", "staging", "qa", "release", "uat", "production", "HEAD"}
 
 func init() {
-	flag.StringVar(&compareBranch, "b", "", "Please provide the branch to compare (default develop)")
+    ignoredDefault := ""
+    for _, i := range ignore {
+        ignoredDefault += i + " "
+    }
+    flag.StringVar(&compareBranch, "b", "", "Please provide the branch to compare (default develop)")
+    flag.StringVar(&ignorecsv, "i", "", "Branches to ignore, csv separated. Default:" + ignoredDefault)
 }
 
 func main() {
@@ -22,6 +28,10 @@ func main() {
 	for _, i := range ignore {
 		ignoreMap[i] = i
 	}
+
+    for _, i := range strings.Split(ignorecsv, ","){
+        ignoreMap[i] = i
+    }
 
 	if compareBranch == "" {
 		compareBranch = "develop"
