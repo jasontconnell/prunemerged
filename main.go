@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"regexp"
@@ -25,6 +26,14 @@ func main() {
 
 	for _, i := range strings.Split(*ignorecsv, ",") {
 		ignoreMap[i] = i
+	}
+
+	if dryrun != nil && *dryrun {
+		ignored := ""
+		for k := range ignoreMap {
+			ignored += k + ","
+		}
+		log.Printf("Dry run pruning merged branches on %s and ignoring %s", *compareBranch, ignored)
 	}
 
 	cmd := exec.Command("git", "branch", "-a", "--merged", *compareBranch)
@@ -64,20 +73,20 @@ func main() {
 		shouldPrune := false
 
 		if *dryrun {
-			fmt.Println(remote, branch)
+			log.Println(remote, branch)
 		} else {
 			if isRemote {
-				fmt.Println("git", "push", "--delete", remote, branch)
+				log.Println("git", "push", "--delete", remote, branch)
 				if remoteOutput, remerr := delRemote.CombinedOutput(); remerr != nil {
-					fmt.Println("command failed, removing remote", string(remoteOutput), remerr)
+					log.Println("command failed, removing remote", string(remoteOutput), remerr)
 				}
 
 				shouldPrune = true
 				remotes = append(remotes, remote)
 			} else {
-				fmt.Println("git", "branch", "-d", branch)
+				log.Println("git", "branch", "-d", branch)
 				if localOutput, locerr := delLocal.CombinedOutput(); locerr != nil {
-					fmt.Println("command failed, removing local", string(localOutput), locerr)
+					log.Println("command failed, removing local", string(localOutput), locerr)
 				}
 			}
 		}
@@ -85,9 +94,9 @@ func main() {
 		if shouldPrune {
 			for _, rem := range remotes {
 				prune := exec.Command("git", "remote", "prune", rem)
-				fmt.Println("git", "remote", "prune", rem)
+				log.Println("git", "remote", "prune", rem)
 				if pruneOutput, pruerr := prune.CombinedOutput(); pruerr != nil {
-					fmt.Println("command failed, pruning remote", rem, string(pruneOutput), pruerr)
+					log.Println("command failed, pruning remote", rem, string(pruneOutput), pruerr)
 				}
 			}
 		}
