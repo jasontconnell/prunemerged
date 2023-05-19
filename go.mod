@@ -1,3 +1,3 @@
 module github.com/jasontconnell/prunemerged
 
-go 1.12
+go 1.20
